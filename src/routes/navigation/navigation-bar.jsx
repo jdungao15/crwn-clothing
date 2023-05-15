@@ -20,7 +20,7 @@ const NavigationBar = () => {
             </div>
 
          </div>
-         <Outlet/>;
+         <Outlet/>
       </Fragment>
    );
 };

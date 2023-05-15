@@ -19,7 +19,7 @@ const App = () => {
             <Route path="sign-in" element={<SignIn/>} />
          </Route>
       </Routes>
-   );
+   )
 };
 
 export default App;
