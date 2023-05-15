@@ -1,5 +1,3 @@
-import {useEffect} from "react";
-import {getRedirectResult} from 'firebase/auth';
 import {
    auth,
    signInWithGooglePopUp,
@@ -8,22 +6,22 @@ import {
 
 } from "../../utils/firebase/firebase.utils";
 import SignUpForm from "../../components/sign-up-form/sign-up-form";
+import SignInForm from "../../components/sign-in-form/sign-in-form";
+import './authentication.scss'
 
-
-const SignIn = () => {
+const Authentication = () => {
    const logGoogleUser = async () => {
       const {user} = await signInWithGooglePopUp();
       const userDocRef = await createUserDocumentFromAuth(user);
    };
 
    return (
-      <div>
-         <h1>Sign in page</h1>
-         <button onClick={logGoogleUser}>Sign in with Google</button>
+      <div className='authentication-container'>
+         <SignInForm />
          <SignUpForm />
 
       </div>
    );
 };
 
-export default SignIn;
+export default Authentication;
