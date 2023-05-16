@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import './sign-up.scss'
 import {
    createAuthUserWithEmailAndPassword,
@@ -6,7 +6,6 @@ import {
 } from "../../utils/firebase/firebase.utils";
 import FormInput from "../form-input/form.input";
 import Button from "../button/button";
-import {Form} from "react-router-dom";
 
 
 const defaultFormFields = {
@@ -37,7 +36,9 @@ const SignUpForm = () => {
          alert("Password do not match.");
       }
       try {
+         // Makes a User authenticate
          const {user} = await createAuthUserWithEmailAndPassword(email, password);
+         // Add user to a document in firebase
          await createUserDocumentFromAuth(user, {displayName});
          resetFormFields();
 
@@ -64,7 +65,7 @@ const SignUpForm = () => {
             />
 
             <FormInput
-               label="email"
+               label="Email"
                type="email"
                required
                onChange={handleChange}
