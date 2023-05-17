@@ -4,7 +4,7 @@ import ProductCard from "../../components/product-card/product-card";
 import './shop.scss'
 
 const Shop = () => {
-   const {products} = useContext(ProductsContext)
+      const {products} = useContext(ProductsContext)
 
    return (
       <div className='products-container'>
