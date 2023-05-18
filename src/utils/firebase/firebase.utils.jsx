@@ -22,13 +22,14 @@ import {
    getDocs
 } from 'firebase/firestore';
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-   apiKey: "AIzaSyA7JQlI3DYxgsSGVVdNrZzfvMHuOfpCBzI",
-   authDomain: "crwn-clothing-db-a6309.firebaseapp.com",
-   projectId: "crwn-clothing-db-a6309",
-   storageBucket: "crwn-clothing-db-a6309.appspot.com",
-   messagingSenderId: "109584593574",
-   appId: "1:109584593574:web:fe64a9bfe5f85a9d1afa67"
+   apiKey: "AIzaSyD-YyPqEliPw0njN70v4S3DQGWb40ap03I",
+   authDomain: "crown-db-1ebf3.firebaseapp.com",
+   projectId: "crown-db-1ebf3",
+   storageBucket: "crown-db-1ebf3.appspot.com",
+   messagingSenderId: "1004958075499",
+   appId: "1:1004958075499:web:f88dde7f24422bec33ff2e"
 };
 
 // Initialize Firebase
@@ -73,6 +74,8 @@ export const getCategoriesAndDocuments = async () => {
    return categoryMap;
 
 }
+
+
 
 
 // Create User Document
