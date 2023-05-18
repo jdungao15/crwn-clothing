@@ -16,6 +16,10 @@ import {
    // database
    getDoc, //get specific document
    setDoc, //write or overwrite to a specific data
+   collection,
+   writeBatch,
+   query,
+   getDocs
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -40,6 +44,38 @@ export const signInWithGooglePopUp = () => signInWithPopup(auth, provider);
 export const signInWithGoogleRedirect = () => signInWithRedirect(auth, provider);
 export const db = getFirestore();
 
+
+// add collection of products to firestore
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+   const collectionRef = collection(db, collectionKey);
+   const batch = writeBatch(db);
+
+   objectsToAdd.forEach(obj => {
+      const docRef = doc(collectionRef, obj.title.toLowerCase());
+      batch.set(docRef, obj)
+   })
+
+   await batch.commit();
+   console.log('done');
+}
+
+// Retrieve collection of products from firestore
+export const getCategoriesAndDocuments = async () => {
+   const collectionRef = collection(db, 'categories');
+   const q = query(collectionRef); //return all the documents in the collection
+   const querySnapshot = await getDocs(q); //
+   const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+      const {title, items} = docSnapshot.data();
+      acc[title.toLowerCase()] = items;
+      return acc;
+   }, {});
+
+   return categoryMap;
+
+}
+
+
+// Create User Document
 export const createUserDocumentFromAuth = async (userAuth, additionalInformation) => {
    if (!userAuth) return;
 

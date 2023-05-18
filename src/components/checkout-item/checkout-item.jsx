@@ -19,11 +19,11 @@ const CheckoutItem = ({item}) => {
       </div>
       <span className="name">{name}</span>
       <span className="quantity">
-         <div className="arrow" onClick={addItem}>
+         <div className="arrow" onClick={decreaseItem}>
             &#10094;
          </div>
             <span className='value'>{quantity}</span>
-         <div className="arrow" onClick={decreaseItem}>
+         <div className="arrow" onClick={addItem}>
             &#10095;
          </div>
       </span>
