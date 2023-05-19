@@ -5,12 +5,12 @@ import './checkout-item.scss';
 
 const CheckoutItem = ({item}) => {
    const {name, imageUrl, price, quantity} = item;
-   const {decrementItemCart, addItemToCart, deleteItemCart} = useContext(CartContext);
+   const {removeItemToCart, addItemToCart, clearItemFromCart} = useContext(CartContext);
 
 
-   const decreaseItem = () => decrementItemCart(item);
+   const removeItem = () => removeItemToCart(item);
    const addItem = () => addItemToCart(item);
-   const deleteItem = () => deleteItemCart(item);
+   const clearItem = () => clearItemFromCart(item);
 
 
    return (<div className="checkout-item-container">
@@ -19,7 +19,7 @@ const CheckoutItem = ({item}) => {
       </div>
       <span className="name">{name}</span>
       <span className="quantity">
-         <div className="arrow" onClick={decreaseItem}>
+         <div className="arrow" onClick={removeItem}>
             &#10094;
          </div>
             <span className='value'>{quantity}</span>
@@ -28,7 +28,7 @@ const CheckoutItem = ({item}) => {
          </div>
       </span>
       <span className="price">{price}</span>
-      <span onClick={deleteItem} className="remove-button">&#10005;</span>
+      <span onClick={clearItem} className="remove-button">&#10005;</span>
 
    </div>);
 };

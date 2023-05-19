@@ -1,103 +1,149 @@
-import {createContext, useEffect, useState} from "react";
-import {logDOM} from "@testing-library/react";
-import cartItem from "../components/cart-item/cart-item";
+import { createContext, useState, useReducer } from 'react';
 
+import { createAction } from '../utils/reducer/reducer.utils';
 
-// Add items
+// add item to cart
 const addCartItem = (cartItems, productToAdd) => {
-   //find if cartItem already exists
-   const existingCartItem = cartItems.find(cartItem => cartItem.id === productToAdd.id);
+   const existingCartItem = cartItems.find(
+      (cartItem) => cartItem.id === productToAdd.id
+   );
 
-   // if it does, increase quantity by 1
    if (existingCartItem) {
-      return cartItems.map((cartItem) => cartItem.id === productToAdd.id ?
-         {...cartItem, quantity: cartItem.quantity + 1} :
-         cartItem
+      return cartItems.map((cartItem) =>
+         cartItem.id === productToAdd.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
       );
    }
-   // if it doesn't, add item to cart
-   return [...cartItems, {...productToAdd, quantity: 1}];
+
+   return [...cartItems, { ...productToAdd, quantity: 1 }];
 };
+// remove cart item from cartItems
+const removeCartItem = (cartItems, cartItemToRemove) => {
+   // find the cart item to remove
+   const existingCartItem = cartItems.find(
+      (cartItem) => cartItem.id === cartItemToRemove.id
+   );
 
-// Decrement Items
-
-const decrementCartItem = (cartItems, productToDecrement) => {
-   //find if cartItem already exists
-   const existingCartItem = cartItems.find(cartItem => cartItem.id === productToDecrement.id);
-
-   // if quantity is 1, remove item from cart
+   // check if quantity is equal to 1, if it is remove that item from the cart
    if (existingCartItem.quantity === 1) {
-      return cartItems.filter(cartItem => cartItem.id !== productToDecrement.id);
+      return cartItems.filter((cartItem) => cartItem.id !== cartItemToRemove.id);
    }
-   // if quantity is more than 1, decrease quantity by 1
-   return cartItems.map((cartItem) => cartItem.id === productToDecrement.id ?
-      {...cartItem, quantity: cartItem.quantity - 1} :
-      cartItem
+
+   // return back cartitems with matching cart item with reduced quantity
+   return cartItems.map((cartItem) =>
+      cartItem.id === cartItemToRemove.id
+         ? { ...cartItem, quantity: cartItem.quantity - 1 }
+         : cartItem
    );
 };
 
-// Delete Items
-const removeCartItem = (cartItems, productToRemove) => {
-   return cartItems.filter(cartItem => cartItem.id !== productToRemove.id)
+// clear cart
+const clearCartItem = (cartItems, cartItemToClear) =>
+   cartItems.filter((cartItem) => cartItem.id !== cartItemToClear.id);
+
+const CART_ACTION_TYPES = {
+   SET_IS_CART_OPEN: 'SET_IS_CART_OPEN',
+   SET_CART_ITEMS: 'SET_CART_ITEMS',
+   SET_CART_COUNT: 'SET_CART_COUNT',
+   SET_CART_TOTAL: 'SET_CART_TOTAL',
 };
 
-// Context
-export const CartContext = createContext({
-      isCartOpen: false,
-      setIsCartOpen: () => {},
-      cartItems: [],
-      addItemToCart: () => {},
-      cartItemsCount: 0,
-      decrementItemCart: () => {},
-      deleteItemCart: () => {},
-      cartTotal: 0,
+const INITIAL_STATE = {
+   isCartOpen: false,
+   cartItems: [],
+   cartCount: 0,
+   cartTotal: 0,
+};
+
+const cartReducer = (state, action) => {
+   const { type, payload } = action;
+
+   switch (type) {
+      case CART_ACTION_TYPES.SET_CART_ITEMS:
+         return {
+            ...state,
+            ...payload,
+         };
+      case CART_ACTION_TYPES.SET_IS_CART_OPEN:
+         return {
+            ...state,
+            isCartOpen: payload,
+         }
+      default:
+         throw new Error(`Unhandled type ${type} in cartReducer`);
    }
-);
-
-export const CartProvider = ({children}) => {
-   const [isCartOpen, setIsCartOpen] = useState(false);
-   const [cartItems, setCartItems] = useState([]);
-   const [cartItemsCount, setCartItemsCount] = useState(0);
-   const [cartTotal, setCartTotal] = useState(0);
-
-   // Update cart items count
-   useEffect(() => {
-      const newCartCount = cartItems.reduce((acc, cartItem) => acc + cartItem.quantity, 0);
-      setCartItemsCount(newCartCount);
-   }, [cartItems]);
-
-   // Update cart total
-   useEffect(() => {
-      const newCartTotal = cartItems.reduce(((acc, cartItem) => acc + cartItem.quantity * cartItem.price), 0)
-      setCartTotal(newCartTotal);
-   }, [cartItems]);
+};
 
 
 
-   // Add items
+export const CartContext = createContext({
+   isCartOpen: false,
+   setIsCartOpen: () => {},
+   cartItems: [],
+   addItemToCart: () => {},
+   removeItemFromCart: () => {},
+   clearItemFromCart: () => {},
+   cartCount: 0,
+   cartTotal: 0,
+});
+
+export const CartProvider = ({ children }) => {
+   const [{ cartCount, cartTotal, cartItems, isCartOpen }, dispatch] = useReducer(
+      cartReducer,
+      INITIAL_STATE
+   );
+
+   const updateCartItemsReducer = (cartItems) => {
+      // update cart count
+      const newCartCount = cartItems.reduce(
+         (total, cartItem) => total + cartItem.quantity,
+         0
+      );
+      // update cart total
+      const newCartTotal = cartItems.reduce(
+         (total, cartItem) => total + cartItem.quantity * cartItem.price,
+         0
+      );
+      const payload = {
+         cartItems,
+         cartCount: newCartCount,
+         cartTotal: newCartTotal,
+      };
+
+      dispatch(createAction(CART_ACTION_TYPES.SET_CART_ITEMS, payload));
+   };
+
    const addItemToCart = (productToAdd) => {
-      setCartItems(addCartItem(cartItems, productToAdd));
+      const newCartItems = addCartItem(cartItems, productToAdd);
+      console.log(newCartItems);
+      updateCartItemsReducer(newCartItems);
    };
-   // Decrement Items
-   const decrementItemCart = (productToDecrement) => {
-      setCartItems(decrementCartItem(cartItems, productToDecrement));
+
+   const removeItemToCart = (cartItemToRemove) => {
+      const newCartItems = removeCartItem(cartItems, cartItemToRemove);
+      updateCartItemsReducer(newCartItems);
    };
-   // Delete Items
-   const deleteItemCart = (productToRemove) => {
-      setCartItems(removeCartItem(cartItems, productToRemove));
+
+   const clearItemFromCart = (cartItemToClear) => {
+      const newCartItems = clearCartItem(cartItems, cartItemToClear);
+      updateCartItemsReducer(newCartItems);
+   };
+
+   const setIsCartOpen = (bool) => {
+      dispatch(createAction(CART_ACTION_TYPES.SET_IS_CART_OPEN, bool));
    }
 
    const value = {
       isCartOpen,
       setIsCartOpen,
       addItemToCart,
+      removeItemToCart,
+      clearItemFromCart,
       cartItems,
-      cartItemsCount,
-      decrementItemCart,
-      deleteItemCart,
+      cartCount,
       cartTotal,
    };
+
    return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
-
-
