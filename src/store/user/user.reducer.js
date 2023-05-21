@@ -1,4 +1,4 @@
-import {USER_ACTION_TYPES} from "./user.types";
+import CATEGORIES_ACTION_TYPES from "../categories/categories.types";
 
 
 
@@ -11,7 +11,7 @@ const INITIAL_STATE = {
 export const userReducer = (state = INITIAL_STATE, action) => {
    const {type, payload} = action;
    switch (type) {
-      case 'SET_CURRENT_USER':
+      case CATEGORIES_ACTION_TYPES.SET_CATEGORIES_MAP:
          return {
             ...state,
             currentUser: payload,
